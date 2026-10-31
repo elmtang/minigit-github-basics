@@ -7,4 +7,4 @@ namespace minigit
 
     std::filesystem::path metadataDirectory(const std::filesystem::path &root);
 
-} // namespace minigit
+} // namespace minigit for the metadirectory
