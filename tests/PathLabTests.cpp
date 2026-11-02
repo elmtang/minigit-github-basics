@@ -23,6 +23,13 @@ int main() {
     if (!check(minigit::metadataDirectory(root) == root /".minigit", "metadataDirectory() should append .minigit to the root path")) {
     return 1;
 }
+const std::filesystem::path nestedRoot = "course/projects/repo";
+
+if (!check(minigit::metadataDirectory(nestedRoot)
+           == nestedRoot / ".minigit",
+           "metadataDirectory() should handle a nested root path")) {
+    return 1;
+}
     std::cout << "PathLab smoke check passed\n";
     return 0;
 }
