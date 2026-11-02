@@ -1,9 +1,13 @@
+
 #pragma once
+
 #include <filesystem>
 
 namespace minigit {
 
-// Week 1 Issues will add small helpers for building paths below a repository root.
-// Path construction describes locations; it does not create files or directories.
+// Returns the metadata directory path inside the repository.
+std::filesystem::path metadataDirectoryPath(
+    const std::filesystem::path& root
+);
 
 } // namespace minigit
