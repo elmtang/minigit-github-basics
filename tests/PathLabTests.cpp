@@ -19,7 +19,7 @@ int main()
         std::cerr << "ordinary root test failed\n";
         return 1;
     }
-    std::cout << "ordinary root test passed\n";
+    std::cout << "ordinary root test passed\n"; // Issue 1: ordinary root
 
     // Issue 1: nested root
     std::filesystem::path nested = minigit::metadataDirectory("course/team/project");
