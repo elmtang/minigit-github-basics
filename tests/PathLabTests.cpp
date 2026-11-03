@@ -30,6 +30,19 @@ if (!check(minigit::metadataDirectory(nestedRoot)
            "metadataDirectory() should handle a nested root path")) {
     return 1;
 }
+
+if (!check(minigit::headFilePath(root)
+           == root / ".minigit" / "HEAD",
+           "headFilePath() should append HEAD inside .minigit")) {
+    return 1;
+}
+
+if (!check(minigit::headFilePath(nestedRoot)
+           == nestedRoot / ".minigit" / "HEAD",
+           "headFilePath() should handle a nested root path")) {
+    return 1;
+}
+
     std::cout << "PathLab smoke check passed\n";
     return 0;
 }

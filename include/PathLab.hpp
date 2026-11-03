@@ -9,4 +9,7 @@ namespace minigit {
 //This builds the path only; it does not create the folder.
 std::filesystem::path metadataDirectory(const std::filesystem::path& root); 
 
+// Returns the HEAD file path inside the repository metadata directory.
+std::filesystem::path headFilePath(const std::filesystem::path& root);
+
 } // namespace minigit

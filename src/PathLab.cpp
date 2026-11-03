@@ -7,8 +7,9 @@ std::filesystem::path metadataDirectory(
     return root / ".minigit";
 }
 
-} // namespace minigit#include "PathLab.hpp"
+std::filesystem::path headFilePath(
+    const std::filesystem::path& root) {
+    return metadataDirectory(root) / "HEAD";
+}
 
-namespace minigit {
-// Implement the focused behavior described by the active Issue.
 } // namespace minigit
