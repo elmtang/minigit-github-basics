@@ -1,3 +1,4 @@
+
 #include "PathLab.hpp"
 #include <iostream>
 #include <fstream>
@@ -63,10 +64,37 @@ const std::string actual{std::istreambuf_iterator<char>(input),
                          std::istreambuf_iterator<char>()};
 input.close();
 
+// Issue 4: Read the text written by Issue 3.
+std::string readContents;
+const bool readSuccess = minigit::readTextFile(filePath, readContents);
+
+const bool readCorrectly =
+    readSuccess && readContents == expected;
+
+// Issue 4: Verify that a missing file is handled without crashing.
+const auto missingFile = testRoot / "missing.txt";
+std::string missingContents = "old contents";
+const bool missingReadSuccess =
+    minigit::readTextFile(missingFile, missingContents);
+
+const bool missingHandled =
+    !missingReadSuccess && missingContents.empty();
+
+// Clean up the temporary test files.
 std::filesystem::remove_all(testRoot);
 
 if (!check(wroteFile && openedFile && actual == expected,
            "writeTextFile() should create missing folders and write the exact text")) {
+    return 1;
+}
+
+if (!check(readCorrectly,
+           "readTextFile() should read the exact contents of an existing file")) {
+    return 1;
+}
+
+if (!check(missingHandled,
+           "readTextFile() should report failure for a missing file")) {
     return 1;
 }
 

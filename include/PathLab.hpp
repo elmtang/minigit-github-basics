@@ -1,3 +1,4 @@
+
 #pragma once
 #include <filesystem>
 #include <string>
@@ -13,5 +14,8 @@ std::filesystem::path metadataDirectory(const std::filesystem::path& root);
 // Returns the HEAD file path inside the repository metadata directory.
 std::filesystem::path headFilePath(const std::filesystem::path& root);
 bool writeTextFile(const std::filesystem::path& filePath, const std::string& text);
+
+// Issue 4: Read text from a file and report failure if it cannot be read.
+bool readTextFile(const std::filesystem::path& filePath, std::string& text);
 
 } // namespace minigit

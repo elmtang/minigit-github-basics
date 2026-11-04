@@ -1,6 +1,8 @@
+
 #include "PathLab.hpp"
 #include <fstream>
 #include <system_error>
+#include <iterator>
 
 namespace minigit {
 
@@ -36,4 +38,30 @@ bool writeTextFile(const std::filesystem::path& filePath,
     file.close();
     return !file.fail();
 }
+
+// Issue 4: Read the contents of a text file.
+// Return false if the file is missing or cannot be read.
+bool readTextFile(const std::filesystem::path& filePath,
+                  std::string& text) {
+    std::ifstream file(filePath, std::ios::binary);
+
+    if (!file) {
+        text.clear();
+        return false;
+    }
+
+    std::string contents{
+        std::istreambuf_iterator<char>(file),
+        std::istreambuf_iterator<char>()
+    };
+
+    if (file.bad()) {
+        text.clear();
+        return false;
+    }
+
+    text = contents;
+    return true;
+}
+
 } // namespace minigit
