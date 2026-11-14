@@ -13,10 +13,13 @@ namespace minigit {
             const std::filesystem::path& metadataRoot() const;
             // Returns the path to a file inside the staging area of the repository.
             std::filesystem::path stageFile(const std::string& path) const;
+               //Issue 13:
+            std::filesystem::path checkpointDirectory(const std::string& id) const;
 
         private:
             std::filesystem::path projectRoot_;
             std::filesystem::path metadataRoot_;
+         
     };
 
 } // namespace minigit

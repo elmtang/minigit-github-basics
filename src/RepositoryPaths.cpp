@@ -1,4 +1,5 @@
 #include "RepositoryPaths.hpp"
+#include <stdexcept>
 #include <utility>
 
 namespace minigit {
@@ -19,6 +20,12 @@ namespace minigit {
          const std::string& path) const {
             return metadataRoot_/"stage" / path;
          }
-    
+   //Issue 13: Returns the path to a checkpoint directory inside 
+   //the metadata directory of the repository.
+    std::filesystem::path RepositoryPaths::checkpointDirectory(const std::string& id) const {
+       if (id.empty())
+       throw std::invalid_argument("checkpointDirectory ID must not be empty");
+       return metadataRoot() / "commits" / id; 
+    }
 
 } // namespace minigit
