@@ -5,22 +5,33 @@
 namespace minigit {
 
     class RepositoryPaths {
-        public:
-            explicit RepositoryPaths(std::filesystem::path projectRoot);
+    public:
+        explicit RepositoryPaths(std::filesystem::path projectRoot);
+        const std::filesystem::path& projectRoot() const;
+        const std::filesystem::path& metadataRoot() const;
 
-            const std::filesystem::path& projectRoot() const;
+        // RP-2: Return paths to the HEAD and index files.
+        std::filesystem::path headFile() const;
+        std::filesystem::path indexFile() const;
+        // RP-3: Return the path to a file in the staging area.
+    std::filesystem::path stageFile(const std::string& path) const;
 
-            const std::filesystem::path& metadataRoot() const;
-            // Returns the path to a file inside the staging area of the repository.
-            std::filesystem::path stageFile(const std::string& path) const;
-               //Issue 13:
-            std::filesystem::path checkpointDirectory(const std::string& id) const;
+    // Issue 13: Return the directory for a checkpoint ID.
+    std::filesystem::path checkpointDirectory(const std::string& id) const;
 
-        private:
-            std::filesystem::path projectRoot_;
-            std::filesystem::path metadataRoot_;
-         
+    // RP-4: Return paths for a commit and a file inside it.
+    std::filesystem::path commitDirectory(const std::string& id) const;
+    std::filesystem::path committedFile(const std::string& id,
+                                        const std::string& path) const;
+
+    // RP-5: Check and clean a file path without opening it.
+    std::string safeRelativeFile(const std::string& argument) const;
+
+private:
+    std::filesystem::path projectRoot_;
+    std::filesystem::path metadataRoot_;
+
+
     };
 
 } // namespace minigit
-    
