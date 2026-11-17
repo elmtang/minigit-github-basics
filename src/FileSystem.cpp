@@ -1,5 +1,5 @@
 #include "FileSystem.hpp"
-
+#include <system_error>
 #include <algorithm>
 #include <fstream>
 #include <ios>
@@ -42,4 +42,10 @@ std::vector<char> FileSystem::readBytes(const std::filesystem::path& path) const
     }
     return data;
 }
-} // namespace minigit
+
+bool FileSystem::fileExists(const std::filesystem::path& path) const {
+    std::error_code error;
+    return std::filesystem::is_regular_file(path, error);
+}
+
+} // namespace minigit 
