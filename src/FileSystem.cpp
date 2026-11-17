@@ -50,9 +50,8 @@ bool FileSystem::fileExists(const std::filesystem::path& path) const {
 
 void FileSystem::copy(const std::filesystem::path& source, const std::filesystem::path& target) const {
     if (!fileExists(source)) {
-        throw std::ios_base::failure("Source file does not exist");
+        throw std::ios_base::failure("Source file does not exist: " + source.string());
     }
     writeBytes(target, readBytes(source));
 }
-
 } // namespace minigit
