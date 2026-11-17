@@ -29,5 +29,17 @@ void FileSystem::writeBytes(const std::filesystem::path& path, const std::vector
         throw std::ios_base::failure("Unable to close file after binary writing");
     }
 }
+std::vector<char> FileSystem::readBytes(const std::filesystem::path& path) const {
+    std::ifstream file(path, std::ios::binary);
+    if (!file.is_open()) {
+        throw std::ios_base::failure("Unable to open file for binary reading");
+    }
 
+    std::vector<char> data;
+    char byte;
+    while (file.get(byte)) {
+        data.push_back(byte);
+    }
+    return data;
+}
 } // namespace minigit
