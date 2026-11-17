@@ -121,6 +121,46 @@ int main()
     std::filesystem::remove_all(readRoot);
     std::cout << "readBytes tests passed\n";
 
+    // FS-3: fileExists
+    const auto existsRoot = std::filesystem::temp_directory_path() /
+        ("minigit-file-exists-test-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    try {
+        std::filesystem::create_directories(existsRoot);
+
+        // An existing file returns true
+        const auto realFile = existsRoot / "dummy.txt";
+        {
+            std::ofstream out(realFile, std::ios::binary);
+            out << "hello";
+        }
+        if (!fileSystem.fileExists(realFile)) {
+            std::cerr << "fileExists should return true for an existing file\n";
+            std::filesystem::remove_all(existsRoot);
+            return 1;
+        }
+
+        // A missing path returns false
+        if (fileSystem.fileExists(existsRoot / "missing.txt")) {
+            std::cerr << "fileExists should return false for a missing path\n";
+            std::filesystem::remove_all(existsRoot);
+            return 1;
+        }
+
+        // A folder is not a file, so it returns false
+        if (fileSystem.fileExists(existsRoot)) {
+            std::cerr << "fileExists should return false for a directory\n";
+            std::filesystem::remove_all(existsRoot);
+            return 1;
+        }
+    } catch (const std::exception& error) {
+        std::filesystem::remove_all(existsRoot);
+        std::cerr << "fileExists test failed: " << error.what() << '\n';
+        return 1;
+    }
+    std::filesystem::remove_all(existsRoot);
+    std::cout << "fileExists tests passed\n";
 
     return 0;
 }
+
