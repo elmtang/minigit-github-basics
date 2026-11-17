@@ -10,6 +10,6 @@ public:
     void writeBytes(const std::filesystem::path& path, const std::vector<char>& data) const;
     std::vector<char> readBytes(const std::filesystem::path& path) const;
     bool fileExists(const std::filesystem::path& path) const;
+    void copy(const std::filesystem::path& source, const std::filesystem::path& target) const;
 };
-
 } // namespace minigit

@@ -160,7 +160,83 @@ int main()
     }
     std::filesystem::remove_all(existsRoot);
     std::cout << "fileExists tests passed\n";
+    // copy
+    const auto copyRoot = std::filesystem::temp_directory_path() /
+        ("minigit-copy-test-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    try {
+        std::filesystem::create_directories(copyRoot);
 
+        // Copy a text file
+        const auto textSource = copyRoot / "text-source.txt";
+        const auto textTarget = copyRoot / "text-target.txt";
+        const std::vector<char> textData = {'h', 'e', 'l', 'l', 'o', '\n', 'w', 'o', 'r', 'l', 'd'};
+        fileSystem.writeBytes(textSource, textData);
+        fileSystem.copy(textSource, textTarget);
+        if (fileSystem.readBytes(textTarget) != textData) {
+            std::cerr << "copy did not copy the text file contents\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+        if (fileSystem.readBytes(textSource) != textData) {
+            std::cerr << "copy should leave the source file unchanged\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+
+        // Copy a file with binary data
+        const auto binarySource = copyRoot / "binary-source.dat";
+        const auto binaryTarget = copyRoot / "binary-target.dat";
+        const std::vector<char> binaryData = {'M', '\0', static_cast<char>(0xFF), '\n', '\r', 'G'};
+        fileSystem.writeBytes(binarySource, binaryData);
+        fileSystem.copy(binarySource, binaryTarget);
+        if (fileSystem.readBytes(binaryTarget) != binaryData) {
+            std::cerr << "copy did not copy the binary file contents exactly\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+
+        // Copy over a target that already has longer content
+        const auto overwriteSource = copyRoot / "overwrite-source.txt";
+        const auto overwriteTarget = copyRoot / "overwrite-target.txt";
+        const std::vector<char> shortData = {'n', 'e', 'w'};
+        const std::vector<char> longData = {'o', 'l', 'd', ' ', 'c', 'o', 'n', 't', 'e', 'n', 't'};
+        fileSystem.writeBytes(overwriteSource, shortData);
+        fileSystem.writeBytes(overwriteTarget, longData);
+        fileSystem.copy(overwriteSource, overwriteTarget);
+        if (fileSystem.readBytes(overwriteTarget) != shortData) {
+            std::cerr << "copy should fully overwrite an existing target with no leftover bytes\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+
+        // A missing source should throw and not create the target
+        const auto missingSource = copyRoot / "missing-source.txt";
+        const auto missingTarget = copyRoot / "missing-target.txt";
+        bool threw = false;
+        try {
+            fileSystem.copy(missingSource, missingTarget);
+        } catch (const std::ios_base::failure&) {
+            threw = true;
+        }
+        if (!threw) {
+            std::cerr << "copy should throw when the source does not exist\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+        if (std::filesystem::exists(missingTarget)) {
+            std::cerr << "copy should not create the target when the source does not exist\n";
+            std::filesystem::remove_all(copyRoot);
+            return 1;
+        }
+    } catch (const std::exception& error) {
+        std::filesystem::remove_all(copyRoot);
+        std::cerr << "copy test failed: " << error.what() << '\n';
+        return 1;
+    }
+    std::filesystem::remove_all(copyRoot);
+    std::cout << "copy tests passed\n";
+    
     return 0;
 }
 
