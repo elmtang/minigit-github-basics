@@ -236,6 +236,49 @@ int main()
     }
     std::filesystem::remove_all(copyRoot);
     std::cout << "copy tests passed\n";
+
+        // FS-5: createDirectories
+    const auto dirRoot = std::filesystem::temp_directory_path() /
+        ("minigit-create-dirs-test-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    try {
+        // Creates nested folders in one call
+        const auto nested = dirRoot / "a" / "b" / "c";
+        fileSystem.createDirectories(nested);
+        if (!std::filesystem::is_directory(nested)) {
+            std::cerr << "createDirectories did not create nested folders\n";
+            std::filesystem::remove_all(dirRoot);
+            return 1;
+        }
+
+        // Calling it again on an existing folder does nothing and doesn't throw
+        fileSystem.createDirectories(nested);
+
+        // A path below an existing file throws, and the file is left unchanged
+        const auto blocker = dirRoot / "blocker.txt";
+        {
+            std::ofstream out(blocker, std::ios::binary);
+            out << "keep me";
+        }
+        bool threw = false;
+        try {
+            fileSystem.createDirectories(blocker / "sub");
+        } catch (const std::ios_base::failure&) {
+            threw = true;
+        }
+        const std::vector<char> keepMe = {'k', 'e', 'e', 'p', ' ', 'm', 'e'};
+        if (!threw || fileSystem.readBytes(blocker) != keepMe) {
+            std::cerr << "createDirectories should throw and leave existing files alone\n";
+            std::filesystem::remove_all(dirRoot);
+            return 1;
+        }
+    } catch (const std::exception& error) {
+        std::filesystem::remove_all(dirRoot);
+        std::cerr << "createDirectories test failed: " << error.what() << '\n';
+        return 1;
+    }
+    std::filesystem::remove_all(dirRoot);
+    std::cout << "createDirectories tests passed\n";
     
     return 0;
 }
