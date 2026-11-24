@@ -12,6 +12,7 @@ public:
     std::filesystem::path headFile() const;
     std::filesystem::path indexFile() const;
     std::filesystem::path stageDir() const;
+    std::filesystem::path commitsDir() const;
     std::filesystem::path stageFile(const std::string& path) const;
     std::string safeRelativeFile(const std::string& argument) const;
     std::filesystem::path commitDirectory(const std::string& id) const;
