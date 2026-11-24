@@ -11,5 +11,6 @@ public:
     std::vector<char> readBytes(const std::filesystem::path& path) const;
     bool fileExists(const std::filesystem::path& path) const;
     void copy(const std::filesystem::path& source, const std::filesystem::path& target) const;
+    void createDirectories(const std::filesystem::path& path) const;
 };
 } // namespace minigit

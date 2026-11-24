@@ -54,4 +54,13 @@ void FileSystem::copy(const std::filesystem::path& source, const std::filesystem
     }
     writeBytes(target, readBytes(source));
 }
+
+void FileSystem::createDirectories(const std::filesystem::path& path) const {
+    std::error_code error;
+    std::filesystem::create_directories(path, error);
+    if (error || !std::filesystem::is_directory(path)) {
+        throw std::ios_base::failure("Unable to create directory");
+    }
+}
+
 } // namespace minigit
