@@ -45,6 +45,8 @@ int main() {
     }
     if (paths.stageDir() != root / ".minigit" / "stage") {
         std::cerr << "stageDir ordinary root test failed\n";
+        return 1;
+    }
     if (paths.commitsDir() != root / ".minigit" / "commits") {
         std::cerr << "commitsDir ordinary root test failed\n";
         return 1;
@@ -80,6 +82,8 @@ int main() {
     }
     if (nestedPaths.stageDir() != nestedRoot / ".minigit" / "stage") {
         std::cerr << "stageDir nested root test failed\n";
+        return 1;
+    }
     if (nestedPaths.commitsDir() != nestedRoot / ".minigit" / "commits") {
         std::cerr << "commitsDir nested root test failed\n";
         return 1;
