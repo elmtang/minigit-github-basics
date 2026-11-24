@@ -31,4 +31,4 @@ When `minigit init` runs in a fresh directory, MiniGit creates a `.minigit/` dir
 If `minigit init` is run when `.minigit/` already exists:
 
 - **Valid repository already exists** (`.minigit/`, `HEAD`, and `index.txt` are all present): `MiniGitRepository::init()` throws a `std::runtime_error` (reported as an error by the CLI) and leaves all existing files and directories completely unchanged.
-- **Damaged or partial `.minigit/`** (e.g., `.minigit/` exists without `HEAD` or `index.txt`): `isInitialized()` evaluates to `false`, and running `init` reports an error without overwriting existing repository data.
+- **Damaged or partial `.minigit/`** (e.g., `.minigit/` exists without `HEAD` or `index.txt`): `isInitialized()` evaluates to `false` without throwing, and running `init` reports an error without overwriting existing repository data.

@@ -1,4 +1,6 @@
 #include "RepositoryPaths.hpp"
+#include "MiniGitRepository.hpp"
+#include <chrono>
 #include <iostream>
 #include <cassert>
 #include <stdexcept>
@@ -189,5 +191,72 @@ int main() {
     if (linkTestFailed) {
         return 1;
     }
+
+    // Repository initialization requires metadata, HEAD, and index.txt.
+    const auto repositoryRoot = std::filesystem::temp_directory_path() /
+        ("minigit-repository-test-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    std::error_code repositoryError;
+    try {
+        const minigit::MiniGitRepository repository{minigit::RepositoryPaths(repositoryRoot)};
+        if (repository.isInitialized()) {
+            std::cerr << "an empty directory was reported as initialized\n";
+            return 1;
+        }
+
+        std::filesystem::create_directories(repositoryRoot);
+        std::filesystem::create_directories(repositoryRoot / ".minigit");
+        if (repository.isInitialized()) {
+            std::cerr << "metadata without HEAD and index.txt was reported as initialized\n";
+            std::filesystem::remove_all(repositoryRoot, repositoryError);
+            return 1;
+        }
+
+        std::ofstream(repositoryRoot / ".minigit" / "HEAD");
+        if (repository.isInitialized()) {
+            std::cerr << "metadata without index.txt was reported as initialized\n";
+            std::filesystem::remove_all(repositoryRoot, repositoryError);
+            return 1;
+        }
+
+        std::ofstream(repositoryRoot / ".minigit" / "index.txt");
+        if (!repository.isInitialized()) {
+            std::cerr << "metadata with HEAD and index.txt was not reported as initialized\n";
+            std::filesystem::remove_all(repositoryRoot, repositoryError);
+            return 1;
+        }
+
+        std::filesystem::remove(repositoryRoot / ".minigit" / "HEAD");
+        if (repository.isInitialized()) {
+            std::cerr << "metadata missing HEAD was reported as initialized\n";
+            std::filesystem::remove_all(repositoryRoot, repositoryError);
+            return 1;
+        }
+        std::filesystem::remove_all(repositoryRoot, repositoryError);
+    } catch (const std::exception& error) {
+        std::filesystem::remove_all(repositoryRoot, repositoryError);
+        std::cerr << "repository initialization test failed: " << error.what() << '\n';
+        return 1;
+    }
+
+    const auto blockedRoot = std::filesystem::temp_directory_path() /
+        ("minigit-repository-blocked-test-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    try {
+        std::ofstream(blockedRoot) << "not a directory";
+        const minigit::MiniGitRepository blockedRepository{
+            minigit::RepositoryPaths(blockedRoot / "child")};
+        if (blockedRepository.isInitialized()) {
+            std::cerr << "an inaccessible repository path was reported as initialized\n";
+            std::filesystem::remove(blockedRoot, repositoryError);
+            return 1;
+        }
+        std::filesystem::remove(blockedRoot, repositoryError);
+    } catch (const std::exception& error) {
+        std::filesystem::remove(blockedRoot, repositoryError);
+        std::cerr << "repository existence check threw: " << error.what() << '\n';
+        return 1;
+    }
+    std::cout << "MiniGitRepository initialization tests passed\n";
     return 0;
 }
