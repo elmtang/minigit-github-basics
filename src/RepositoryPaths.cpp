@@ -24,6 +24,8 @@ std::filesystem::path RepositoryPaths::indexFile() const {
     return metadataRoot_ / "index.txt";
 }
 
+std::filesystem::path RepositoryPaths::stageDir() const {
+    return metadataRoot_ / "stage";
 std::filesystem::path RepositoryPaths::commitsDir() const {
     return metadataRoot_ / "commits";
 }
